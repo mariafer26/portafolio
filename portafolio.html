@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M_FERNANDA_OS // PORTFOLIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+            /* Cursor retro global */
+        }
+
+        :root {
+            --bg-color: #080808;
+            --text-main: #D4D0C8;
+            --text-dim: #888888;
+            --accent-red: #FF2D55;
+            --accent-red-dim: #CC1144;
+            --accent-pink: #FF6B8A;
+            --accent-gradient: linear-gradient(135deg, #FF2D55, #FF6B8A);
+            --accent-gradient-hover: linear-gradient(135deg, #FF6B8A, #FF2D55);
+            --win-grey: #C0C0C0;
+            --win-blue: #0000AA;
+            --border-light: #FFFFFF;
+            --border-dark: #404040;
+            --border-black: #000000;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Scanlines Overlay (Efecto Monitor CRT) */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.6;
+        }
+
+        /* Disposición general asimétrica brutalista */
+        .layout {
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Sidebar Fija (Estilo panel de control) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100vh;
+            padding: 2rem;
+            background: var(--bg-color);
+            border-right: 2px dashed var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sys-status {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-dark);
+            padding: 1rem;
+            text-transform: uppercase;
+        }
+
+        .sys-status span {
+            color: var(--accent-red);
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        nav a {
+            display: block;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.5rem;
+            border: 1px solid transparent;
+            transition: all 0.1s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: var(--accent-gradient);
+            color: var(--border-black);
+            border: 1px solid var(--accent-pink);
+        }
+
+        /* Contenido Principal */
+        .content {
+            margin-left: 320px;
+            padding: 2rem 4rem;
+        }
+
+        /* Estilo Ventanas (Windows 95 style) */
+        .window {
+            background: var(--win-grey);
+            color: var(--border-black);
+            border-top: 2px solid var(--border-light);
+            border-left: 2px solid var(--border-light);
+            border-bottom: 2px solid var(--border-black);
+            border-right: 2px solid var(--border-black);
+            margin-bottom: 4rem;
+            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.5);
+        }
+
+        .window-dark {
+            background: #111;
+            color: var(--text-main);
+            border: 1px solid var(--border-dark);
+            border-top: 2px solid var(--border-dark);
+            border-left: 2px solid var(--border-dark);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .title-bar {
+            background: var(--win-blue);
+            color: white;
+            padding: 2px 5px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .window-content {
+            padding: 2rem;
+        }
+
+        /* Hero Section (Terminal View) */
+        .hero {
+            padding: 4rem 2rem;
+            border-left: 5px solid;
+            border-image: var(--accent-gradient) 1;
+            margin-top: 2rem;
+        }
+
+        .sys-prompt {
+            color: var(--accent-red);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 700;
+            color: var(--border-light);
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+            position: relative;
+        }
+
+        .hero h2 {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        /* Botones estilo Win clásico */
+        .win-button {
+            display: inline-block;
+            background: var(--win-grey);
+            color: var(--border-black);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-top: 2px solid var(--border-light);
+            border-left: 2px solid var(--border-light);
+            border-bottom: 2px solid var(--border-black);
+            border-right: 2px solid var(--border-black);
+            text-transform: uppercase;
+        }
+
+        .win-button:active {
+            border-top: 2px solid var(--border-black);
+            border-left: 2px solid var(--border-black);
+            border-bottom: 2px solid var(--border-light);
+            border-right: 2px solid var(--border-light);
+            transform: translate(2px, 2px);
+        }
+
+        /* Botones Accent */
+        .btn-accent {
+            background: var(--accent-gradient);
+            color: white;
+            border-top: 2px solid var(--accent-pink);
+            border-left: 2px solid var(--accent-pink);
+            border-bottom: 2px solid var(--accent-red-dim);
+            border-right: 2px solid var(--accent-red-dim);
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-gradient-hover);
+        }
+
+        .btn-accent:active {
+            border-top: 2px solid var(--accent-red-dim);
+            border-left: 2px solid var(--accent-red-dim);
+            border-bottom: 2px solid var(--accent-pink);
+            border-right: 2px solid var(--accent-pink);
+            transform: translate(2px, 2px);
+        }
+
+        /* Section Headers */
+        .section-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px dotted var(--border-dark);
+            padding-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            color: var(--accent-red);
+            font-size: 2rem;
+            text-transform: uppercase;
+        }
+
+        .section-header h2::before {
+            content: '>> ';
+            color: var(--text-dim);
+        }
+
+        /* About Grid */
+        .about-text p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            color: var(--border-light);
+            background: var(--accent-gradient);
+            padding: 0 5px;
+        }
+
+        /* Skills Matrix */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .skill-category {
+            border: 1px solid var(--border-dark);
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .skill-category h3 {
+            color: var(--border-light);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--accent-red);
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: var(--bg-color);
+            border: 1px solid var(--border-dark);
+            color: var(--text-main);
+            padding: 0.3rem 0.6rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .skill-tag:hover {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .project-card p {
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-badge {
+            background: #000;
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            padding: 2px 6px;
+            font-size: 0.8rem;
+        }
+
+        .github-section {
+            padding: 3rem;
+            text-align: center;
+            border: 2px dashed var(--border-dark);
+            margin: 4rem 0;
+        }
+
+        /* Contact Box */
+        .contact-content {
+            border: 1px solid var(--accent-red);
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            text-decoration: none;
+            color: var(--border-light);
+            font-size: 1.5rem;
+            border: 1px solid var(--border-dark);
+            padding: 0.5rem 1rem;
+        }
+
+        .social-link:hover {
+            background: var(--accent-gradient);
+            border-color: var(--accent-pink);
+        }
+
+        footer {
+            border-top: 1px dashed var(--border-dark);
+            padding-top: 2rem;
+            margin-top: 4rem;
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        /* ===== SCATTERED DECORATIVE IMAGES ===== */
+        .deco-img {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            filter: invert(1);
+            mix-blend-mode: screen;
+            opacity: 0.12;
+            transition: opacity 0.6s ease;
+        }
+
+        .deco-img:hover {
+            opacity: 0.3;
+        }
+
+        /* Floating animation */
+        @keyframes floatUp {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+        }
+
+        @keyframes floatDown {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(12px) rotate(-2deg);
+            }
+        }
+
+        @keyframes slowSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Individual Positions — scattered along page borders and between sections */
+        .deco-1 {
+            top: 80px;
+            right: -40px;
+            width: 180px;
+            animation: floatUp 8s ease-in-out infinite;
+            opacity: 0.15;
+        }
+
+        .deco-2 {
+            top: 520px;
+            left: -30px;
+            width: 120px;
+            animation: slowSpin 40s linear infinite;
+            opacity: 0.10;
+        }
+
+        .deco-3 {
+            top: 900px;
+            right: -20px;
+            width: 140px;
+            animation: slowSpin 40s linear infinite;
+            opacity: 0.13;
+        }
+
+        .deco-4 {
+            top: 1400px;
+            left: -50px;
+            width: 160px;
+            animation: floatUp 12s ease-in-out infinite;
+            opacity: 0.10;
+        }
+
+        .deco-5 {
+            top: 1800px;
+            right: -30px;
+            width: 100px;
+            animation: none;
+            opacity: 0.14;
+        }
+
+        .deco-6 {
+            top: 2200px;
+            left: -20px;
+            width: 130px;
+            animation: slowSpin 35s linear infinite reverse;
+            opacity: 0.11;
+        }
+
+        .deco-7 {
+            top: 2700px;
+            right: 100px;
+            width: 150px;
+            animation: floatUp 11s ease-in-out infinite;
+            opacity: 0.12;
+        }
+
+        .deco-8 {
+            top: 3100px;
+            left: -35px;
+            width: 110px;
+            animation: none;
+            opacity: 0.10;
+        }
+
+        .deco-9 {
+            top: 2500px;
+            right: -25px;
+            width: 120px;
+            animation: slowSpin 45s linear infinite;
+            opacity: 0.13;
+        }
+
+        .deco-10 {
+            top: 420px;
+            left: 70%;
+            transform: translateX(-50%);
+            width: 220px;
+            animation: none;
+            opacity: 0.14;
+        }
+
+        .deco-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            opacity: 0.08;
+            animation: floatUp 14s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .deco-11 {
+            top: 1500px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            animation: none;
+            opacity: 0.14;
+        }
+
+        .deco-12 {
+            top: 2500px;
+            left: 30%;
+            transform: translateX(-50%);
+            width: 220px;
+            animation: slowSpin 45s linear infinite;
+            opacity: 0.14;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 2px dashed var(--border-dark);
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 2rem 1.5rem;
+            }
+
+            .deco-img {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scanlines"></div>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h1 style="color: var(--accent-red); font-size: 1.8rem; border-bottom: 2px solid; display: inline-block;">
+                M_FERNANDA</h1>
+
+            <div class="sys-status">
+                <div>STATUS: <span>ONLINE</span></div>
+                <div>SYS: CORTEX_V9</div>
+                <div>USER: GUEST_01</div>
+            </div>
+
+            <nav>
+                <ul>
+                    <li><a href="#inicio" class="active">[0] INICIO</a></li>
+                    <li><a href="#sobre-mi">[1] SOBRE MÍ</a></li>
+                    <li><a href="#habilidades">[2] HABILIDADES</a></li>
+                    <li><a href="#proyectos">[3] PROYECTOS</a></li>
+                    <li><a href="#contacto">[4] CONTACTO</a></li>
+                </ul>
+            </nav>
+
+            <div style="flex-grow: 1;"></div>
+            <div style="font-size: 0.8rem; color: var(--text-dim);">
+                <p>>_ ESTUDIANTE DE INGENIERÍA</p>
+                <p>>_ UPLOADING DATA...</p>
+            </div>
+        </aside>
+
+        <!-- Scattered Decorative Images -->
+        <img src="_.webp" alt="" class="deco-img deco-1" aria-hidden="true">
+        <img src="ojo.webp" alt="" class="deco-img deco-2" aria-hidden="true">
+        <img src="stars.webp" alt="" class="deco-img deco-3" aria-hidden="true">
+        <img src="_.webp" alt="" class="deco-img deco-4" aria-hidden="true">
+        <img src="stars.webp" alt="" class="deco-img deco-5" aria-hidden="true">
+        <img src="ojo.webp" alt="" class="deco-img deco-6" aria-hidden="true">
+        <img src="_.webp" alt="" class="deco-img deco-7" aria-hidden="true">
+        <img src="stars.webp" alt="" class="deco-img deco-8" aria-hidden="true">
+        <img src="ojo.webp" alt="" class="deco-img deco-9" aria-hidden="true">
+        <img src="_.webp" alt="" class="deco-img deco-center" aria-hidden="true">
+        <img src="ojo.webp" alt="" class="deco-img deco-10" aria-hidden="true">
+        <img src="stars.webp" alt="" class="deco-img deco-11" aria-hidden="true">
+        <img src="phone.webp" alt="" class="deco-img deco-12" aria-hidden="true">
+
+        <main class="content">
+            <!-- Hero Section -->
+            <section id="inicio" class="hero window-dark">
+                <p class="sys-prompt">root@mariafernanda:~# ./init_profile.sh</p>
+                <h1>MARIA<br>FERNANDA_</h1>
+                <h2>[ ESTUDINATE DE INGENIERÍA DE SISTEMAS ]</h2>
+                <p
+                    style="margin-bottom: 2rem; max-width: 600px; font-size: 1.1rem; border-left: 2px solid var(--border-dark); padding-left: 1rem;">
+                    Transformando ideas en soluciones tecnológicas con creatividad.
+                </p>
+                <a href="#proyectos" class="win-button btn-accent">ACCEDER A DIRECTORIO DE PROYECTOS</a>
+            </section>
+
+            <!-- About Section (Window Style) -->
+            <section id="sobre-mi" class="window">
+                <div class="title-bar">
+                    <span>sys_about.txt - Notepad</span>
+                    <span>_ [] X</span>
+                </div>
+                <div class="window-content">
+                    <div class="section-header">
+                        <h2>SOBRE_MÍ</h2>
+                        <p class="sys-prompt" style="font-size: 0.9rem;">> PATH: /usr/data/bio.txt</p>
+                    </div>
+
+                    <div class="about-text">
+                        <p>
+                            Soy una <span class="highlight">estudiante de Ingeniería de Sistemas</span> con
+                            un gusto profundo por el desarrollo de software y la tecnología.
+                            Mi enfoque combina el pensamiento lógico con la creatividad para resolver problemas de
+                            manera innovadora o simplemente crear.
+                        </p>
+                        <p>
+                            Me motiva el aprendizaje continuo y enfcarlo creativamente para crear proyectos y generar
+                            soluciones.
+                            Cada proyecto es una oportunidad para crecer, experimentar y desarrollar nuevas habilidades.
+                        </p>
+                        <ul
+                            style="list-style-type: square; margin-left: 2rem; margin-top: 1rem; color: var(--border-black);">
+                            <li><strong>Innovación:</strong> Busco formas creativas de abordar desafíos tecnológicos, me
+                                gusta aprender cosas que me reten y me motiven a seguir adelante.
+                            </li>
+                            <li><strong>Aprendizaje:</strong> Comprometida con la adquisición de nuevas tecnologías.
+                            </li>
+                            <li><strong>Colaboración:</strong> Trabajo eficazmente en equipo.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="habilidades" class="window-dark">
+                <div class="section-header">
+                    <h2>HABILIDADES_SYS</h2>
+                </div>
+
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3>[ LENGUAJES ]</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">CSS</span>
+                            <span class="skill-tag">HTML</span>
+                            <span class="skill-tag">javascript</span>
+                            <span class="skill-tag">SQL</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>[ TECNOLOGÍAS ]</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Git</span>
+                            <span class="skill-tag">GitHub</span>
+                            <span class="skill-tag">AWS</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">React</span>
+                            <span class="skill-tag">Spring Boot</span>
+                            <span class="skill-tag">Node.js</span>
+                            <span class="skill-tag">MySQL</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>[ SOFT_SKILLS ]</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Trabajo en Equipo</span>
+                            <span class="skill-tag">Lógica</span>
+                            <span class="skill-tag">Resolución</span>
+                            <span class="skill-tag">Adaptabilidad</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="proyectos" style="margin-top: 4rem;">
+                <div class="section-header">
+                    <h2>PROYECTOS_DIR</h2>
+                    <p class="sys-prompt" style="font-size: 0.9rem;">> lS -la /proyectos</p>
+                </div>
+
+                <div class="projects-grid">
+                    <div class="window project-card">
+                        <div class="title-bar"><span>groupsapp.exe</span></div>
+                        <div class="window-content" style="height: 100%;">
+                            <h3>GroupsApp</h3>
+                            <div class="project-tech">
+                                <span class="tech-badge">Node.js</span>
+                                <span class="tech-badge">Socket.IO</span>
+                                <span class="tech-badge">MySQL</span>
+                            </div>
+                            <p>Aplicación de chat en tiempo real con canales grupales, presencia de usuarios y
+                                persistencia de mensajes.</p>
+                            <a href="https://github.com/mariafer26/GroupsApp" target="_blank" class="win-button"
+                                style="text-align: center; width: 100%;">EJECUTAR
+                                (GitHub)</a>
+                        </div>
+                    </div>
+
+                    <div class="window project-card">
+                        <div class="title-bar"><span>glamstore.exe</span></div>
+                        <div class="window-content" style="height: 100%;">
+                            <h3>GlamStore</h3>
+                            <div class="project-tech">
+                                <span class="tech-badge">Python</span>
+                                <span class="tech-badge">Flask</span>
+                            </div>
+                            <p>Sistema de gestión para tienda de maquillaje con control de inventario, ventas y
+                                reportes.</p>
+                            <a href="https://github.com/mariafer26/Glamstore" target="_blank" class="win-button"
+                                style="text-align: center; width: 100%;">EJECUTAR
+                                (GitHub)</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GitHub Section -->
+            <div class="window-dark github-section">
+                <h2 style="color: var(--accent-red); margin-bottom: 1rem; font-size: 2rem;">[ ACCESO PÚBLICO: GITHUB ]
+                </h2>
+                <p style="margin-bottom: 2rem;">Todo mi código fuente está indexado en repositorios públicos remotos.
+                </p>
+                <a href="https://github.com/mariafer26" class="win-button btn-accent" target="_blank">
+                    INICIAR_CONEXIÓN_SSH
+                </a>
+            </div>
+
+            <!-- Contact Section -->
+            <section id="contacto" class="window-dark contact-content" style="margin-top: 4rem;">
+                <h2 style="font-size: 2rem; color: var(--border-light); margin-bottom: 1.5rem;">C:/> PING_ME</h2>
+                <p style="margin-bottom: 2rem;">
+                    Disponible para prácticas profesionales o colaboraciones en proyectos.
+                </p>
+                <a href="https://mail.google.com/mail/?view=cm&to=mariaferalvarez0426@gmail.com"
+                    class="win-button btn-accent" style="font-size: 1.2rem; cursor: pointer;" target="_blank">
+                    ENVIAR_PAQUETE (Email)
+                </a>
+
+                <div class="social-links">
+                    <a href="https://github.com/mariafer26" class="social-link" title="GitHub">GH</a>
+                    <a href="https://www.instagram.com/mariafer26_/" class="social-link" title="Instagram">IG</a>
+                    <a href="https://www.linkedin.com/in/maria-fernanda-alvarez-marin-b87b11303/" class="social-link"
+                        title="LinkedIn">IN</a>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer>
+                <p>"EL CÓDIGO ES POESÍA DIGITAL QUE RESUELVE PROBLEMAS REALES"</p>
+                <p style="margin-top: 0.5rem; color: var(--accent-red);"> M_FERNANDA_OS // V1.0</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Script for active nav linking -->
+    <script>
+        // Use IntersectionObserver for reliable scroll-spy with fixed sidebar
+        const navLinks = document.querySelectorAll('nav a');
+        const sections = document.querySelectorAll('section[id]');
+
+        // Click handler: immediate active state + smooth scroll
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                const targetId = link.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // IntersectionObserver: update active state on scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -60% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+
+</html>
